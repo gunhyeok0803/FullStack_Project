@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="lec-03-prg-01-tcp-echo-server.cpp">
+    <ClCompile Include="lec-03-prg-02-tcp-echo-client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
