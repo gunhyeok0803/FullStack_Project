@@ -1,11 +1,59 @@
 {
   "version": "0.2.0",
   "configurations": [
-    
-
-
-
-    
+    {
+      "name": "(Windows) Launch",
+      "type": "lldb",
+      "request": "launch",
+      "program": "enter program name, for example ${workspaceFolder}/a.exe",
+      "args": [],
+      "cwd": "${fileDirname}",
+      "console": "externalTerminal"
+    },
+    {
+      "name": "(Windows) Attach",
+      "type": "lldb",
+      "request": "attach"
+    },
+    {
+      "name": "C/C++: Launch (Visual Studio)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/x64/Debug/FullStack_Project.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": true,
+      "MIMode": "windows",
+      "miDebuggerPath": "C:\\Program Files (x86)\\Windows Kits\\10\\Debuggers\\x64\\cdb.exe"
+    },
+    {
+      "name": "C/C++: Launch (VS Code - No Debug)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/x64/Debug/FullStack_Project.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": true,
+      "MIMode": "windows",
+      "miDebuggerPath": "C:\\Program Files (x86)\\Windows Kits\\10\\Debuggers\\x64\\cdb.exe"
+    },
+    {
+      "name": "Debug: lec-03-prg-08",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/lec-03-prg-08-tcp-echo-server-multithread-chat.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": true,
+      "MIMode": "windows",
+      "miDebuggerPath": "C:\\Program Files (x86)\\Windows Kits\\10\\Debuggers\\x64\\cdb.exe"
+    },
     {
       "name": "C/C++ Runner: Debug Session",
       "type": "cppdbg",
@@ -13,17 +61,10 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/FullStack_Project",
-      "program": "c:/FullStack_Project/build/Debug/outDebug",
-      "MIMode": "gdb",
-      "miDebuggerPath": "gdb",
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing for gdb",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ]
+      "cwd": "${workspaceFolder}",
+      "program": "${workspaceFolder}/lec-03-prg-08-tcp-echo-server-multithread-chat.exe",
+      "MIMode": "windows",
+      "miDebuggerPath": "C:\\Program Files (x86)\\Windows Kits\\10\\Debuggers\\x64\\cdb.exe"
     }
   ]
 }
