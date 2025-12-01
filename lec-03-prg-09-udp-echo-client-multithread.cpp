@@ -14,7 +14,7 @@ void recvHandler(SOCKET clientSocket) {
     char buffer[1024];
     while (true) {
         memset(buffer, 0, 1024);
-        int bytesReceived = recv(clientSocket, buffer, 1024, 0);
+        int bytesReceived = recvfrom(clientSocket, buffer, 1024, 0, NULL, NULL);
         
         if (bytesReceived <= 0) {
             break;
@@ -37,7 +37,7 @@ void main_client() {
         return;
     }
 
-    SOCKET clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+    SOCKET clientSocket = socket(AF_INET, SOCK_DGRAM, 0);
     if (clientSocket == INVALID_SOCKET) {
         std::cout << "Socket creation failed." << "\n";
         WSACleanup();
@@ -50,14 +50,6 @@ void main_client() {
     serverAddr.sin_port = htons(PORT);
     inet_pton(AF_INET, HOST.c_str(), &serverAddr.sin_addr);
 
-    // Connect to server 
-    if (connect(clientSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
-        std::cout << "Connection failed." << "\n";
-        closesocket(clientSocket);
-        WSACleanup();
-        return;
-    }
-
     std::thread clientThread(recvHandler, clientSocket);
     
     clientThread.detach();
@@ -67,7 +59,7 @@ void main_client() {
         std::string sendMsg;
         std::getline(std::cin, sendMsg);
 
-        send(clientSocket, sendMsg.c_str(), sendMsg.length(), 0);
+        sendto(clientSocket, sendMsg.c_str(), sendMsg.length(), 0, (struct sockaddr*)&serverAddr, sizeof(serverAddr));
         
         if (sendMsg == "quit") {
             break;
