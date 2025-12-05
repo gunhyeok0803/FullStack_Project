@@ -119,7 +119,7 @@ int main() {
         active_thread_count--; 
     });
 
-    // daemon = True
+    // daemon
     server_thread.detach(); 
     std::cout << "server loop running in thread: " << "MainThread" <<"\n";
 
