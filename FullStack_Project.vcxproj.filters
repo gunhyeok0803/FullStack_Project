@@ -18,5 +18,35 @@
     <ClCompile Include="lec-03-prg-02-tcp-echo-client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="lec-03-prg-01-tcp-echo-server.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lec-03-prg-03-tcp-echo-server-complete.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lec-03-prg-04-tcp-echo-client-complete.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lec-03-prg-05-tcp-echo-server-socketserver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lec-03-prg-06-tcp-echo-server-multithread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lec-03-prg-07-tcp-echo-client-multithread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lec-03-prg-08-tcp-echo-server-multithread-chat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lec-03-prg-09-udp-echo-client-multithread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lec-03-prg-10-udp-echo-server-socketserver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lec-03-prg-11-udp-echo-server-socketserver-chat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

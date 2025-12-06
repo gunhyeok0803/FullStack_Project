@@ -1,25 +1,33 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <iostream>
 #include <winsock2.h>
+#include <ws2tcpip.h> 
 #include <thread>
 #include <string>
 
 #pragma comment(lib, "ws2_32.lib")
 
-std::string HOST = "127.0.0.1";
-int PORT = 65456;
+const std::string HOST = "127.0.0.1";
+const int PORT = 65456;
 
 //{CHAT#1}
-void revHandler(SOCKET clientSocket){
+void recvHandler(SOCKET clientSocket){
     char buffer[1024];
     while (true){
+        memset(buffer, 0, 1024);
+        
         int bytes_received = recv(clientSocket, buffer, 1024, 0);
 
-        if(bytes_received == 0) break;
+        if(bytes_received == SOCKET_ERROR || bytes_received == 0) {
+            std::cout << "[System] Server disconnected.\n";
+            break;
+        }
 
-        std::cout << "received: " << buffer << "\n";
+        // convert the received data to a string
+        std::string recvData(buffer, bytes_received);
+        std::cout << "received: " << recvData << "\n";
 
-        if(std::string(buffer) == "quit"){
+        if(recvData == "quit"){
             break;
         }
     }
@@ -38,35 +46,44 @@ int runClient(){
 
     sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = inet_addr(HOST.c_str());
+    
+    inet_pton(AF_INET, HOST.c_str(), &server_addr.sin_addr);
     server_addr.sin_port = htons(PORT);
 
+   
     if (connect(clientSocket, (struct sockaddr*)&server_addr, sizeof(server_addr)) == SOCKET_ERROR) {
-        std::cout << "connect falid" << "\n";
-
-        std::cout << "connect failed by exceptin: " << WSAGetLastError() << "\n";
-
+        std::cout << "connect failed with error: " << WSAGetLastError() << "\n";
         closesocket(clientSocket);
         WSACleanup();
         return 1;
     }
 
     //{CHAT#2}
-    std::thread clientTread(revHandler, clientSocket);
-    clientTread.detach();
+    std::thread clientThread(recvHandler, clientSocket);
+    clientThread.detach();
 
     while (true) {
         //{start}
         std::string sendMsg;
         std::getline(std::cin, sendMsg);
 
-        send(clientSocket, sendMsg.c_str(), sendMsg.length(), 0);
+        
+        if(sendMsg.empty()) continue;
+
+        int sendResult = send(clientSocket, sendMsg.c_str(), sendMsg.length(), 0);
+        
+        if (sendResult == SOCKET_ERROR) {
+            std::cout << "send failed\n";
+            break;
+        }
 
         if(sendMsg == "quit") {
             break;
         }
         //{end}
     }
+    
+    // close the socket
     closesocket(clientSocket);
     WSACleanup();
     return 0;

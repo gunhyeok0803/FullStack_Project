@@ -4,53 +4,86 @@
 #include <thread>
 #include <mutex>
 #include <atomic>
+#include <algorithm> 
 #include <winsock2.h> 
 #include <ws2ipdef.h>
 #include <ws2tcpip.h>
 
-#pragma comment(lib, "ws2_32.lib") // Winsock lib
+#pragma comment(lib, "ws2_32.lib") 
 
 
-// {CHAT#1} Create a DB to register all client's socket information
 std::vector<SOCKET> group_queue;
-std::mutex queue_mutex; // Mutex
-
+std::mutex queue_mutex; 
 std::atomic<int> active_thread_count(0);
 
 class ThreadedTCPRequestHandler {
 public:
     void handle(SOCKET clientSocket, struct sockaddr_in clientAddr){
-        active_thread_count ++;
+        active_thread_count++;
 
         char clientIP[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
         int clientPort = ntohs(clientAddr.sin_port);
 
-        std::cout << "client connected by IP address" << clientIP << "with Port number " << clientPort << "\n";
-        // {CHAT#3} Register a new client connection information into a client DB   
-        {    std::lock_guard<std::mutex> lock(queue_mutex); 
-             group_queue.push_back(clientSocket);
+        std::cout << "[System] Client connected: " << clientIP << ":" << clientPort << "\n";
+        
+        {    
+            std::lock_guard<std::mutex> lock(queue_mutex); 
+            group_queue.push_back(clientSocket);
         }
     
         char buffer[1024];
         while(true){
-            //{start}
             memset(buffer, 0, 1024);
+            
+            // receive data
             int bytesReceived = recv(clientSocket, buffer, 1024, 0);
 
-            std::string recvStr = std::string(buffer);
+            
+            if (bytesReceived > 0) {
+                 // std::cout << "[DEBUG] Raw bytes received: " << bytesReceived << "\n";
+            }
 
-            if(bytesReceived == 0 || recvStr == "quit"){
-                // {CHAT#4} Deregister a disconnected client from a client DB
+            
+            if(bytesReceived <= 0) {
+                break; 
+            }
+
+            std::string recvStr(buffer, bytesReceived);
+            
+            
+            if (!recvStr.empty() && recvStr.back() == '\n') recvStr.pop_back();
+            if (!recvStr.empty() && recvStr.back() == '\r') recvStr.pop_back();
+
+          
+            if(recvStr == "quit"){
+                break; 
+            }
+
+            
+            {
                 std::lock_guard<std::mutex> lock(queue_mutex);
-                std::cout << "> received ( " << recvStr << " ) and echoed to " << group_queue.size() << " clients" << "\n";
+                std::cout << "> received ( " << recvStr << " ) and echoed to " << group_queue.size() << " clients\n";
                 
                 for(SOCKET conn : group_queue){
+                    // send to all clients
                     send(conn, buffer, bytesReceived, 0);
                 }
             }
         }
-        //{end}
+
+        // close connection
+        std::cout << "[System] Client disconnected: " << clientIP << ":" << clientPort << "\n";
+        
+        {
+            std::lock_guard<std::mutex> lock(queue_mutex);
+            auto it = std::remove(group_queue.begin(), group_queue.end(), clientSocket);
+            if (it != group_queue.end()) {
+                group_queue.erase(it, group_queue.end());
+            }
+        }
+
+        closesocket(clientSocket);
         active_thread_count--;
     }
 };
@@ -64,7 +97,6 @@ class ThreadedTCPServer{
         WSADATA wsaData;
         WSAStartup(MAKEWORD(2, 2), &wsaData);
 
-        // create a socket
         serverSocket = socket(AF_INET, SOCK_STREAM, 0);
         
         sockaddr_in serverAddr;
@@ -72,19 +104,13 @@ class ThreadedTCPServer{
         serverAddr.sin_port = htons(port);
         inet_pton(AF_INET, host, &serverAddr.sin_addr);
 
-        // Bind
         if (bind(serverSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
-            std::cerr << "Bind failed with error: " << WSAGetLastError() << std::endl;
-            closesocket(serverSocket);
-            WSACleanup();
+            std::cerr << "Bind failed: " << WSAGetLastError() << std::endl;
             return;
         }
         
-        // Listen
         if (listen(serverSocket, SOMAXCONN) == SOCKET_ERROR) {
-            std::cerr << "Listen failed with error: " << WSAGetLastError() << std::endl;
-            closesocket(serverSocket);
-            WSACleanup();
+            std::cerr << "Listen failed: " << WSAGetLastError() << std::endl;
             return;
         }
     }
@@ -100,9 +126,8 @@ class ThreadedTCPServer{
                 if(!isRunning) break;
                 continue;
             }
-            // Start a thread with the server
-            ThreadedTCPRequestHandler handler;
-            std::thread clientThread(&ThreadedTCPRequestHandler::handle, handler, clientSocket, clientAddr);
+            
+            std::thread clientThread(&ThreadedTCPRequestHandler::handle, ThreadedTCPRequestHandler(), clientSocket, clientAddr);
             clientThread.detach();
         }
     }
@@ -118,19 +143,17 @@ int main(){
     const char* HOST = "127.0.0.1";
     int PORT = 65456;
 
-    std::cout << "ehco-server is activated" << "\n";
+    std::cout << "echo-server is activated" << "\n";
 
     ThreadedTCPServer server(HOST, PORT);
 
-    // Start a thread with the server
     std::thread server_thread(&ThreadedTCPServer::server_forever, &server);
     server_thread.detach();
 
     std::cout << "> server loop running in thread (main thread)" << "\n";
     while (true) {
         std::string msg;
-    
-        std::getline(std::cin, msg); // input('> ')
+        std::getline(std::cin, msg); 
 
         if (msg == "quit") {
             if (active_thread_count == 0) {
@@ -138,7 +161,7 @@ int main(){
                 break;
             }
             else {
-                std::cout << "> active threads are remained : " << active_thread_count << " threads" << "\n";
+                std::cout << "> active threads remained : " << active_thread_count << " threads" << "\n";
             }
         }
     }
