@@ -123,7 +123,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="lec-03-prg-01-tcp-echo-server.cpp" />
     <ClCompile Include="lec-03-prg-02-tcp-echo-client.cpp" />
+    <ClCompile Include="lec-03-prg-03-tcp-echo-server-complete.cpp" />
+    <ClCompile Include="lec-03-prg-04-tcp-echo-client-complete.cpp" />
+    <ClCompile Include="lec-03-prg-05-tcp-echo-server-socketserver.cpp" />
+    <ClCompile Include="lec-03-prg-06-tcp-echo-server-multithread.cpp" />
+    <ClCompile Include="lec-03-prg-07-tcp-echo-client-multithread.cpp" />
+    <ClCompile Include="lec-03-prg-08-tcp-echo-server-multithread-chat.cpp" />
+    <ClCompile Include="lec-03-prg-09-udp-echo-client-multithread.cpp" />
+    <ClCompile Include="lec-03-prg-10-udp-echo-server-socketserver.cpp" />
+    <ClCompile Include="lec-03-prg-11-udp-echo-server-socketserver-chat.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

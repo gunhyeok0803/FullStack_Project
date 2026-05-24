@@ -1,14 +1,12 @@
 {
     "tasks": [
         {
-            "type": "cppbuild",
+            "type": "shell",
             "label": "C/C++: cl.exe build active file",
-            "command": "cl.exe",
+            "command": "${workspaceFolder}\\.vscode\\build.bat",
             "args": [
-                "/Zi",
-                "/EHsc",
-                "/nologo",
-                "/Fe${fileDirname}\\${fileBasenameNoExtension}.exe",
+                "${fileDirname}",
+                "${fileBasenameNoExtension}",
                 "${file}"
             ],
             "options": {
