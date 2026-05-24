@@ -40,3 +40,17 @@
 Debug/
 Release/
 x64/
+*.ilk 
+*.pdb 
+*.vcxproj 
+*.vcxproj.filters 
+*.sln 
+*.ps1 
+vc140.pdb 
+*.ilk 
+*.pdb 
+*.vcxproj 
+*.vcxproj.filters 
+*.sln 
+*.ps1 
+vc140.pdb 
